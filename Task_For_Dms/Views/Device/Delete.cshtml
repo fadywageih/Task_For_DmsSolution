@@ -1,0 +1,53 @@
+﻿@model Task_For_Dms.BLL.Model.DeviceDetailsToReturnDto
+
+@{
+    ViewData["Title"] = "Delete Device";
+}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Delete Device</h1>
+    <p class="text-gray-600">Are you sure you want to delete this device?</p>
+</div>
+<div class="bg-white shadow-md rounded-lg overflow-hidden border border-red-200">
+    <div class="p-6">
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700">
+                        This action cannot be undone. This will permanently delete the device <strong>@Model.DeviceName</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Device Name</dt>
+                <dd class="mt-1 text-sm text-gray-900">@Model.DeviceName</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Category</dt>
+                <dd class="mt-1">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                          @(Model.Category == DeviceCategory.Laptop ? "bg-blue-100 text-blue-800" :
+                            Model.Category == DeviceCategory.Printer ? "bg-green-100 text-green-800" :
+                            "bg-purple-100 text-purple-800")">
+                        @Model.CategoryName
+                    </span>
+                </dd>
+            </div>
+        </div>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="flex justify-end gap-3">
+                <a asp-action="Index" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition">Cancel</a>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                    Delete Device
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

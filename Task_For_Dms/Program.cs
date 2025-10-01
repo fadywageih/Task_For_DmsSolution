@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using Task_For_Dms.BLL.Services.Device;
+using Task_For_Dms.DAL.Presistance;
+using Task_For_Dms.DAL.UnitOfWork;
+
 namespace Task_For_Dms
 {
     public class Program
@@ -5,13 +10,16 @@ namespace Task_For_Dms
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDBContext>(options =>
+            {
+                options.UseLazyLoadingProxies().
+                UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+            builder.Services.AddScoped<IDeviceService, DeviceService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");

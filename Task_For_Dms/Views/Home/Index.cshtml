@@ -2,7 +2,17 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="max-w-3xl mx-auto text-center py-12 px-4 sm:px-6">
+    <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl md:text-5xl">
+        Welcome to the Device Management System
+    </h1>
+    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+        A centralized platform to manage your IT department devices — add, edit, and search devices by category (Laptops, Printers, Switches, and more) with dynamic properties.
+    </p>
+    <div class="mt-8">
+        <a asp-controller="Device" asp-action="Index"
+           class="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition shadow-md">
+            Get Started
+        </a>
+    </div>
 </div>

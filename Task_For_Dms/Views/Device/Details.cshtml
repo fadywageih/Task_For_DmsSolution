@@ -1,0 +1,89 @@
+﻿@model Task_For_Dms.BLL.Model.DeviceDetailsToReturnDto
+@using Task_For_Dms.DAL.Common.Enums
+@{
+    ViewData["Title"] = "Device Details";
+}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Device Details</h1>
+        <p class="text-gray-600">View all information about this device</p>
+    </div>
+    <div class="flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id"
+           class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition">
+            Edit
+        </a>
+        <a asp-action="Index"
+           class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition">
+            Back to List
+        </a>
+    </div>
+</div>
+<div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Device Name</dt>
+                <dd class="mt-1 text-sm text-gray-900">@Model.DeviceName</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Serial Number</dt>
+                <dd class="mt-1 text-sm text-gray-900">@Model.SerialNumber</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Category</dt>
+                <dd class="mt-1">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                          @(Model.Category == DeviceCategory.Laptop ? "bg-blue-100 text-blue-800" :
+                            Model.Category == DeviceCategory.Printer ? "bg-green-100 text-green-800" :
+                            "bg-purple-100 text-purple-800")">
+                        @Model.CategoryName
+                    </span>
+                </dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Acquisition Date</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                    @(Model.AcquisitionDate?.ToString("dd/MM/yyyy") ?? "N/A")
+                </dd>
+            </div>
+            <div class="md:col-span-2">
+                <dt class="text-sm font-medium text-gray-500">Memo</dt>
+                <dd class="mt-1 text-sm text-gray-900 whitespace-pre-line">
+                    @(string.IsNullOrEmpty(Model.Memo) ? "— No memo —" : Model.Memo)
+                </dd>
+            </div>
+        </div>
+    </div>
+    @if (Model.Properties?.Any() == true)
+    {
+        <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Device Properties</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach (var prop in Model.Properties)
+                {
+                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <dt class="text-sm font-medium text-gray-500">@prop.Key</dt>
+                        <dd class="mt-1 text-sm font-medium text-gray-900">
+                            @if (prop.Key.Equals("Is Color", StringComparison.OrdinalIgnoreCase))
+                            {
+                                @(prop.Value.Equals("true", StringComparison.OrdinalIgnoreCase) ? "Yes" : "No")
+                            }
+                            else
+                            {
+                                @(!string.IsNullOrEmpty(prop.Value) ? prop.Value : "—")
+                            }
+                        </dd>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="p-6 text-center text-gray-500">
+            No properties defined for this device.
+        </div>
+    }
+</div>

@@ -1,0 +1,140 @@
+﻿@model Task_For_Dms.BLL.Model.DeviceUpdateDto
+@using Task_For_Dms.DAL.Common.Enums
+@{
+    ViewData["Title"] = "Edit Device";
+}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Edit Device</h1>
+    <p class="text-gray-600">Update the device details below</p>
+</div>
+<form asp-action="Edit" method="post" id="deviceForm">
+    <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm p-3 bg-red-50 rounded-lg border border-red-200"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="bg-white shadow-md rounded-lg p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label asp-for="DeviceName" class="block text-sm font-medium text-gray-700 mb-1">Device Name *</label>
+                <input asp-for="DeviceName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="DeviceName" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="SerialNumber" class="block text-sm font-medium text-gray-700 mb-1">Serial Number *</label>
+                <input asp-for="SerialNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="SerialNumber" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="AcquisitionDate" class="block text-sm font-medium text-gray-700 mb-1">Acquisition Date</label>
+                <input asp-for="AcquisitionDate" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+                <label asp-for="Category" class="block text-sm font-medium text-gray-700 mb-1">Device Category *</label>
+                <select asp-for="Category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="categorySelect">
+                    <option value="">-- Select Category --</option>
+                    <option value="@((int)DeviceCategory.Laptop)">Laptop</option>
+                    <option value="@((int)DeviceCategory.Printer)">Printer</option>
+                    <option value="@((int)DeviceCategory.Switch)">Switch</option>
+                </select>
+                <span asp-validation-for="Category" class="text-red-500 text-sm"></span>
+            </div>
+        </div>
+        <div>
+            <label asp-for="Memo" class="block text-sm font-medium text-gray-700 mb-1">Memo</label>
+            <textarea asp-for="Memo" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+        <div id="propertiesSection" class="hidden">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Device Properties</h2>
+            <div id="dynamicFields" class="space-y-4"></div>
+        </div>
+        <div class="flex justify-end gap-3 pt-4">
+            <a asp-action="Index" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition">Cancel</a>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                Update Device
+            </button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const categorySelect = document.getElementById('categorySelect');
+            const propertiesSection = document.getElementById('propertiesSection');
+            const dynamicFields = document.getElementById('dynamicFields');
+            const propertyFields = {
+                '@((int)DeviceCategory.Laptop)': [
+                    { name: 'Processor', type: 'text', label: 'Processor *' },
+                    { name: 'HD', type: 'text', label: 'Hard Disk (e.g., 512GB SSD)' },
+                    { name: 'Ram', type: 'text', label: 'RAM (e.g., 16GB)' },
+                    { name: 'Display', type: 'text', label: 'Display Size (e.g., 15.6")' },
+                    { name: 'IP Address', type: 'text', label: 'IP Address' },
+                    { name: 'Brand', type: 'text', label: 'Brand *' },
+                    { name: 'Current User', type: 'text', label: 'Current User' }
+                ],
+                '@((int)DeviceCategory.Printer)': [
+                    { name: 'IP Address', type: 'text', label: 'IP Address' },
+                    { name: 'Is Color', type: 'checkbox', label: 'Is Color Printer?' },
+                    { name: 'Brand', type: 'text', label: 'Brand *' }
+                ],
+                '@((int)DeviceCategory.Switch)': [
+                    { name: 'Ports', type: 'number', label: 'Number of Ports *', min: '1' },
+                    { name: 'Speed', type: 'number', label: 'Speed (Gbps) *', step: '0.1', min: '0' },
+                    { name: 'IP Address', type: 'text', label: 'IP Address' },
+                    { name: 'Brand', type: 'text', label: 'Brand *' }
+                ]
+            };
+            function renderFields(categoryId, existingProps = {}) {
+                dynamicFields.innerHTML = '';
+                if (categoryId && propertyFields[categoryId]) {
+                    propertiesSection.classList.remove('hidden');
+                    const fields = propertyFields[categoryId];
+                    fields.forEach(field => {
+                        const value = existingProps[field.name] || '';
+                        const isChecked = value === 'true';
+                        const fieldDiv = document.createElement('div');
+                        fieldDiv.className = 'space-y-1';
+
+                        if (field.type === 'checkbox') {
+                            fieldDiv.innerHTML = `
+                                <div class="flex items-center">
+                                    <input type="checkbox"
+                                           name="Properties['${field.name}']"
+                                           id="${field.name}"
+                                           value="true"
+                                           ${isChecked ? 'checked' : ''}
+                                           class="h-4 w-4 text-blue-600 rounded">
+                                    <label for="${field.name}" class="ml-2 block text-sm text-gray-700">${field.label}</label>
+                                </div>
+                            `;
+                        } else {
+                            fieldDiv.innerHTML = `
+                                <label for="${field.name}" class="block text-sm font-medium text-gray-700">${field.label}</label>
+                                <input type="${field.type}"
+                                       name="Properties['${field.name}']"
+                                       id="${field.name}"
+                                       value="${value}"
+                                       ${field.min ? `min="${field.min}"` : ''}
+                                       ${field.step ? `step="${field.step}"` : ''}
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            `;
+                        }
+                        dynamicFields.appendChild(fieldDiv);
+                    });
+                } else {
+                    propertiesSection.classList.add('hidden');
+                }
+            }
+            categorySelect.addEventListener('change', function () {
+                renderFields(this.value);
+            });
+            const initialCategory = categorySelect.value;
+            const existingProperties = @Html.Raw(Json.Serialize(Model.Properties));
+            if (initialCategory) {
+                renderFields(initialCategory, existingProperties);
+            }
+        });
+    </script>
+}
